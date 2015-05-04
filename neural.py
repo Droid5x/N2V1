@@ -2,7 +2,10 @@ import random
 import math
 random.seed()
 
-#might get rid of this function...
+boardSize = 100
+mutation_prob = 0.1
+target_size = 0.5
+
 def sigmoid(totalActivation, threshold):
 	if (threshold == 0):
 		threshold = 0.0000001
@@ -12,7 +15,7 @@ def recombineWeights(weights1, weights2):
 	new_weights = []
 	value = 0.0
 	if len(weights1) != len(weights2):
-		raise ValueError("We have a problem here! Two disimilar nets tried to have a child!")
+		raise ValueError("We have a problem here! The networks are different!")
 	for i in range(len(weights1)):
 		value = random()
 		new_weights.append(value*weights1[i] + (1-value)*weights2[i])
@@ -20,7 +23,9 @@ def recombineWeights(weights1, weights2):
 
 class neuron(object):
 	def __init__(self, number_of_inputs):
-		self.inputWeights = random.sample(range(100), number_of_inputs+1)
+		self.inputWeights = []
+		for i in range(0, number_of_inputs+1):
+			self.inputWeights.append(random.uniform(-1,1))
 		self.totalActivation = 0.0
 		self.output = 0.0
 		
@@ -75,6 +80,7 @@ class neuralNet(object):
 				for i in range(0, len(neuron.inputWeights)):
 					neuron.inputWeights[i] = new_weights[counter]
 					counter += 1
+		self.updateWeightsList()
 
 	def runNetwork(self, inputs):
 		totalActivation = 0
@@ -91,9 +97,27 @@ class neuralActor(object):
 	def __init__(self, number_of_hidden_layers, size_of_hidden_layers, num_inputs, num_outputs):
 		self.network = neuralNet(number_of_hidden_layers, size_of_hidden_layers, num_inputs, num_outputs) 
 		self.score = 0
+		self.x = random.uniform(0,boardSize)
+		self.y = random.uniform(0,boardSize)
+		self.x_look = 1 # Should probably also randomize this
+		self.y_look = 0
 
 	def runActor(self, inputs):
-		return self.network.runNetwork(inputs)
+		outputs = self.network.runNetwork(inputs)
+		#apply a transform here, based on look vector and location
+		radians = (math.pi/2)*(output[0]-output[1])
+		temp_x = self.x_look
+		temp_y = self.y_look
+		self.x_look = temp_x*math.cos(radians) + temp_y*math.sin(radians)
+		self.y_look = temp_y*math.cos(radians) - temp_x*math.sin(radians)
+		temp_x = self.x_look
+		temp_y = self.y_look
+		norm = math.sqrt(temp_x**2 + temp_y**2)
+		self.x_look /= norm
+		self.y_look /= norm
+		self.x += self.x_look
+		self.y += self.y_look
+		return outputs
 
 	def getWeights(self):
 		self.network.updateWeightsList()
@@ -102,12 +126,25 @@ class neuralActor(object):
 	def changeWeights(self, weights):
 		self.network.replaceWeights(weights)
 
-class geneticAlgorithm(object):
-	def __init__(self, number_of_hidden_layers, size_of_hidden_layers, num_inputs, num_outputs, number_of_actors, number_of_generations):
-		self.actors = []
-		for i in range(0, number_of_actors):
-			self.actors.append(neuralActor(number_of_hidden_layers, size_of_hidden_layers, num_inputs, num_outputs))
-			self.generations_simulated = 0
-			self.max_generations = number_of_generations
+	def getLocation(self):
+		return (self.x, self.y)
 
+	def closestPrize(self, prizes): # takes list of all "prizes" (each has an x and y coord)
+		dist = []
+		maxVal = 0
+		indexVal = 0
+		for prize in prizes:
+			dist.append(sqrt(abs(self.x - prize.x)**2 + abs(self.y - prize.y)**2))
+		for i in range(len(dist)):
+			if dist[i] < minVal:
+				minVal = dist[i]
+				indexVal = i
+		return i
+
+	def mutate(self):
+		temp = self.getWeights()
+		for weight in temp:
+			if random(0,1) <= mutation_prob:
+				weight = random.uniform(-1,1)
+		self.network.replaceWeights(temp)
 
