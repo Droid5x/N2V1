@@ -1,4 +1,5 @@
 import random
+from neural import *
 random.seed()
 
 

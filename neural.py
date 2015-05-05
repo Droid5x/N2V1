@@ -105,7 +105,7 @@ class neuralActor(object):
 	def runActor(self, inputs):
 		outputs = self.network.runNetwork(inputs)
 		#apply a transform here, based on look vector and location
-		radians = (math.pi/2)*(output[0]-output[1])
+		radians = (math.pi/2)*(outputs[0]-outputs[1])
 		temp_x = self.x_look
 		temp_y = self.y_look
 		self.x_look = temp_x*math.cos(radians) + temp_y*math.sin(radians)
@@ -131,10 +131,10 @@ class neuralActor(object):
 
 	def closestPrize(self, prizes): # takes list of all "prizes" (each has an x and y coord)
 		dist = []
-		maxVal = 0
+		minVal = 0
 		indexVal = 0
 		for prize in prizes:
-			dist.append(sqrt(abs(self.x - prize.x)**2 + abs(self.y - prize.y)**2))
+			dist.append(math.sqrt(abs(self.x - prize.x)**2 + abs(self.y - prize.y)**2))
 		for i in range(len(dist)):
 			if dist[i] < minVal:
 				minVal = dist[i]
