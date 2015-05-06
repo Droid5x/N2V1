@@ -21,8 +21,8 @@ class geneticAlgorithm(object):
 	def makeChildNetworks(self):
 		#sort the actors by their scores
 		self.actors.sort(key=lambda x: x.score, reverse = False)
-		temp = actors[0:len(self.actors)/2]
-		newActor = neuralActor()
+		temp = self.actors[0:int(len(self.actors)/2)]
+		newActor = neuralActor(self.hidden_layers, self.hidden_size, self.input_size, self.output_size)
 		weights = []
 		maxScore = self.actors[0].score
 		minScore = self.actors[-1].score
@@ -31,8 +31,7 @@ class geneticAlgorithm(object):
 			avgScore += actor.score
 		for actor in temp:
 			actor.mutate()
-		for i in range(1,len(self.actors)/2):
-			newActor = neuralActor(self.hidden_layers, self.hidden_size, self.input_size, self.output_size)
+		for i in range(1,math.floor(len(self.actors)/2)):
 			weights = recombineWeights(self.actors[i-1].getWeights(), self.actors[i].getWeights())
 			newActor.network.replaceWeights(weights)
 			temp.append(newActor)
@@ -50,7 +49,7 @@ class geneticAlgorithm(object):
 				inputs = [target.x, target.y]
 				actor.runActor(inputs)
 				if math.sqrt(abs(actor.x - target.x)**2 + abs(actor.y - target.y)**2) <= target_size:
-					self.score += 1
+					actor.score += 1
 					self.prizes.pop[k]
 					#add a new prize since one was taken
 					self.prizes.append(prize())
@@ -60,8 +59,7 @@ class geneticAlgorithm(object):
 			ticks+=1
 		#now that the simulation has ended, find the average score, maximum score, and minimum score
 		results = self.makeChildNetworks()
-		print("Epoch " + str(epoch) + ":\n")
-		print
+		print("Epoch " + str(self.epoch) + ":\n")
 
 
 

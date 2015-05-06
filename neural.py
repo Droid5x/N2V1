@@ -9,7 +9,7 @@ target_size = 0.5
 def sigmoid(totalActivation, threshold):
 	if (threshold == 0):
 		threshold = 0.0000001
-	return 1/(1+math.exp(-totalActivation/threshold))
+	return 1/(1+math.exp(-(totalActivation-threshold/1.0)))
 
 def recombineWeights(weights1, weights2):
 	new_weights = []
@@ -17,7 +17,7 @@ def recombineWeights(weights1, weights2):
 	if len(weights1) != len(weights2):
 		raise ValueError("We have a problem here! The networks are different!")
 	for i in range(len(weights1)):
-		value = random()
+		value = random.random()
 		new_weights.append(value*weights1[i] + (1-value)*weights2[i])
 	return new_weights
 
@@ -144,7 +144,7 @@ class neuralActor(object):
 	def mutate(self):
 		temp = self.getWeights()
 		for weight in temp:
-			if random(0,1) <= mutation_prob:
+			if random.random() <= mutation_prob:
 				weight = random.uniform(-1,1)
 		self.network.replaceWeights(temp)
 
