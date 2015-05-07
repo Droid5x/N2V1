@@ -3,7 +3,7 @@ from neural import *
 def main():
 	generations = 0
 	while(generations < 100):
-
+		
 
 
 
