@@ -1,7 +1,7 @@
 import random
 random.seed()
 
-boardSize = 1000
+boardSize = 150
 
 class prize(object):
 	def __init__(self):

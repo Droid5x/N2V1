@@ -2,8 +2,9 @@ import random
 import math
 from neural import *
 
-target_size = 2
-boardSize = 1000
+target_size = 1
+boardSize = 150
+max_mutation = 0.3
 
 
 class neuralActor(object):
@@ -12,9 +13,9 @@ class neuralActor(object):
 
 		self.score = 0
 
-		self.x = boardSize * random.random()
+		self.x = random.uniform(0,boardSize)
 
-		self.y = boardSize * random.random()
+		self.y = random.uniform(0,boardSize)
 
 		self.rotation = 2 * math.pi * random.random()
 
@@ -144,7 +145,7 @@ class neuralActor(object):
 
 			if random.random() <= mutation_prob:
 
-				weight = random.uniform(-1,1)
+				weight += random.random() * max_mutation
 
 		self.network.replaceWeights(temp)
 

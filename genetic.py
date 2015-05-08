@@ -2,7 +2,7 @@ from neural import *
 from prize import *
 from neuralActor import *
 
-boardSize = 1000
+boardSize = 150
 
 class geneticAlgorithm(object):
 	epoch = 0
@@ -37,7 +37,13 @@ class geneticAlgorithm(object):
 		#sort the actors by their scores
 		self.actors.sort(key=lambda x: x.score, reverse = 1)
 
-		temp = self.actors[0:int(math.floor(self.number_of_actors/2))]
+		if math.floor(self.number_of_actors/2) % 2 != 0:
+
+			temp = self.actors[0:int(math.floor(self.number_of_actors/2))+1]
+
+		else:
+
+			temp = self.actors[0:int(math.floor(self.number_of_actors/2))]
 
 		weights = []
 
@@ -57,24 +63,38 @@ class geneticAlgorithm(object):
 
 				totalScore += actor.score
 
-		for actor in temp:
+		i = 0 
 
-			actor.mutate()
+		j = 1
 
-		for i in range(self.number_of_actors - len(temp)):
+		while(len(temp) < len(self.actors)):
 
 			# make a new temporary actor for when new ones are created
 			newActor = neuralActor(self.hidden_layers, self.hidden_size, self.input_size, self.output_size)
 
-			weights = recombineWeights(self.actors[0].getWeights(), self.actors[i].getWeights())
+			weights_list = recombineWeights(self.actors[i].getWeights(), self.actors[j].getWeights())
 
-			newActor.network.replaceWeights(weights)
+			newActor.network.replaceWeights(weights_list[0])
 
 			temp.append(newActor)
+
+			newActor = neuralActor(self.hidden_layers, self.hidden_size, self.input_size, self.output_size)
+
+			newActor.network.replaceWeights(weights_list[1])
+
+			temp.append(newActor)
+
+			i += 1
+
+			j += 1
 
 		if len(temp) != self.number_of_actors:
 
 			print("ERROR: We don't have as many actors as we started with!!!\n")
+
+		for actor in temp:
+
+			actor.mutate()
 
 		self.actors = temp[:]
 
@@ -93,8 +113,7 @@ class geneticAlgorithm(object):
 				# run the actor
 				k = actor.runActor(self.prizes)
 
-				if k:
-
+				if k:					
 					self.prizes.pop(k)
 
 					#add a new prize since one was taken
@@ -119,7 +138,11 @@ class geneticAlgorithm(object):
 
 
 def recombineWeights(weights1, weights2):
-	new_weights = []
+	new_weights1 = []
+
+	new_weights2 = []
+
+	switch = random.randint(0, len(weights1) - 1)
 
 	value = 0.0
 
@@ -127,13 +150,19 @@ def recombineWeights(weights1, weights2):
 
 		raise ValueError("We have a problem here! The networks are different!")
 
-	for i in range(len(weights1)):
+	for i in range(switch):
 
-		value = random.random()
+		new_weights1.append(weights1[i])
 
-		new_weights.append(value*weights1[i] + (1-value)*weights2[i])
+		new_weights2.append(weights2[i])
 
-	return new_weights
+	for i in range(switch, len(weights1)):
+
+		new_weights2.append(weights1[i])
+
+		new_weights1.append(weights2[i])
+
+	return (new_weights1, new_weights2)
 
 
 
