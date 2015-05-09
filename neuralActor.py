@@ -1,10 +1,7 @@
 import random
 import math
+from params import *
 from neural import *
-
-target_size = 1
-boardSize = 150
-max_mutation = 0.3
 
 
 class neuralActor(object):

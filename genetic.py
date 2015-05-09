@@ -1,8 +1,7 @@
 from neural import *
 from prize import *
+from params import *
 from neuralActor import *
-
-boardSize = 150
 
 class geneticAlgorithm(object):
 	epoch = 0
@@ -106,7 +105,7 @@ class geneticAlgorithm(object):
 
 		ticks = 0
 
-		while ticks <= 1000:
+		while ticks <= max_ticks:
 
 			for actor in self.actors:
 

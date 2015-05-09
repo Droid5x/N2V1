@@ -1,9 +1,9 @@
 import random
 import math
+from params import *
 from copy import deepcopy
 random.seed()
 
-mutation_prob = 0.15
 
 class neuron(object):
 	def __init__(self, number_of_inputs):
