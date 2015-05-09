@@ -56,13 +56,25 @@ class neuralActor(object):
 
 		rotation_velocity = self.l_velocity - self.r_velocity
 
-		if rotation_velocity > math.pi:
+		if rotation_velocity > max_rotational_velocity:
 
-			rotation_velocity = math.pi
+			rotation_velocity = max_rotational_velocity
+
+		elif rotation_velocity < -1 * max_rotational_velocity:
+
+			rotation_velocity = -1 * max_rotational_velocity
 
 		self.rotation += rotation_velocity
 
 		linear_velocity = self.l_velocity + self.r_velocity
+
+		if linear_velocity > max_linear_velocity:
+
+			linear_velocity = max_linear_velocity
+
+		elif linear_velocity < -1 * max_linear_velocity:
+
+			linear_velocity = -1 * max_linear_velocity
 
 		self.look_x = -math.sin(self.rotation)
 
@@ -92,15 +104,11 @@ class neuralActor(object):
 
 			self.y = 0
 
-		if math.sqrt(abs(self.x - prizes[k].x)**2 + abs(self.y - prizes[k].y)**2) < target_size:
-
-			print("I found a prize! :D")
-
-			self.score += 1
+		if math.sqrt(abs(self.x - prizes[k].x)**2 + abs(self.y - prizes[k].y)**2) < target_size + actor_size:
 
 			return k
 
-		return 0
+		return -1
 
 	def getWeights(self):
 		self.network.updateWeightsList()

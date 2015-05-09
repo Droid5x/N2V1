@@ -31,18 +31,18 @@ class geneticAlgorithm(object):
 			self.prizes.append(prize())
 			#going to need to avoid duplicate prizes in the same location...
 
-	# replaces worst 50% of networks with children from the best 50% and mutates the top 50%
 	def makeChildNetworks(self):
 		#sort the actors by their scores
 		self.actors.sort(key=lambda x: x.score, reverse = 1)
 
-		if math.floor(self.number_of_actors/2) % 2 != 0:
+		temp = self.actors[0:num_best]
 
-			temp = self.actors[0:int(math.floor(self.number_of_actors/2))+1]
+		# add copies_best number of copies of the num_best actors
+		for j in range(copies_best):
+		
+			for i in range(num_best):
 
-		else:
-
-			temp = self.actors[0:int(math.floor(self.number_of_actors/2))]
+				temp.append(temp[i])
 
 		weights = []
 
@@ -62,16 +62,12 @@ class geneticAlgorithm(object):
 
 				totalScore += actor.score
 
-		i = 0 
-
-		j = 1
-
 		while(len(temp) < len(self.actors)):
 
 			# make a new temporary actor for when new ones are created
 			newActor = neuralActor(self.hidden_layers, self.hidden_size, self.input_size, self.output_size)
 
-			weights_list = recombineWeights(self.actors[i].getWeights(), self.actors[j].getWeights())
+			weights_list = recombineWeights(self.actors[random.randint(0, len(self.actors)-1)].getWeights(), self.actors[random.randint(0, len(self.actors)-1)].getWeights())
 
 			newActor.network.replaceWeights(weights_list[0])
 
@@ -112,15 +108,19 @@ class geneticAlgorithm(object):
 				# run the actor
 				k = actor.runActor(self.prizes)
 
-				if k:					
+				# if we get a valid index number, then the actor found the prize
+				if k >= 0:	
+					# Replace the prize by setting it as a new one (it'll get new x and y coords)				
 					self.prizes.pop(k)
 
-					#add a new prize since one was taken
 					self.prizes.append(prize())
+
+					#increment the actor's score:
+					actor.score += 1
 
 			ticks+=1
 
-		#now that the simulation has ended, find the average score, maximum score, and minimum score
+		# now that the simulation has ended, find the average score, maximum score, and minimum score
 		results = self.makeChildNetworks()
 
 		print("Epoch " + str(self.epoch) + ":\n")
