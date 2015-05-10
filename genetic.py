@@ -121,6 +121,7 @@ class geneticAlgorithm(object):
 			ticks+=1
 
 		# now that the simulation has ended, find the average score, maximum score, and minimum score
+		# also mutate and recombine the networks as needed
 		results = self.makeChildNetworks()
 
 		print("Epoch " + str(self.epoch) + ":\n")
