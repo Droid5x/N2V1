@@ -27,9 +27,9 @@ class neuralActor(object):
 	def reset():
 		self.score = 0
 
-		self.x = boardSize * random.random()
+		self.x = random.uniform(0,boardSize)
 
-		self.y = boardSize * random.random()
+		self.y = random.uniform(0,boardSize)
 
 		self.rotation = 2 * math.pi * random.random()
 
@@ -93,7 +93,6 @@ class neuralActor(object):
 			self.x = boardSize
 
 		elif self.x > boardSize:
-
 			self.x = 0
 
 		if self.y < 0:

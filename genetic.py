@@ -130,9 +130,9 @@ class geneticAlgorithm(object):
 
 		print("Worst Score: " + str(results[1]))
 
-		print("Total Score: " + str(results[2]))
+		print("Actors Who Scored: " + str(results[3]))
 
-		print("Total Actors Who Scored: " + str(results[3]))
+		print("Total Score: " + str(results[2]))
 
 		print("Average Score: " + str(results[4]) + '\n')
 
@@ -142,27 +142,33 @@ def recombineWeights(weights1, weights2):
 
 	new_weights2 = []
 
-	switch = random.randint(0, len(weights1) - 1)
+	if random.random() > crossover_prob:
 
-	value = 0.0
+		return (weights1, weights2)
 
-	if len(weights1) != len(weights2):
+	else:
 
-		raise ValueError("We have a problem here! The networks are different!")
+		switch = random.randint(0, len(weights1) - 1)
 
-	for i in range(switch):
+		value = 0.0
 
-		new_weights1.append(weights1[i])
+		if len(weights1) != len(weights2):
 
-		new_weights2.append(weights2[i])
+			raise ValueError("We have a problem here! The networks are different!")
 
-	for i in range(switch, len(weights1)):
+		for i in range(switch):
 
-		new_weights2.append(weights1[i])
+			new_weights1.append(weights1[i])
 
-		new_weights1.append(weights2[i])
+			new_weights2.append(weights2[i])
 
-	return (new_weights1, new_weights2)
+		for i in range(switch, len(weights1)):
+
+			new_weights2.append(weights1[i])
+
+			new_weights1.append(weights2[i])
+
+		return (new_weights1, new_weights2)
 
 
 
