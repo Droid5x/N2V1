@@ -3,9 +3,19 @@ from prize import *
 from params import *
 from neuralActor import *
 
+# This class implements the genetic algorithm features and runs all the epochs
+# It also contains all the actors and map data
 class geneticAlgorithm(object):
 	epoch = 0
 	def __init__(self, number_of_hidden_layers, size_of_hidden_layers, num_inputs, num_outputs, number_of_actors, num_targets):
+		# Generate a file to output runtime data to
+		f_name = input("Please input output file name: ")
+
+		self.f = open(f_name, 'w')
+
+		self.f.write("Epoch\tBest\tWorst\tActors\tTotal\tAverage\n")
+
+		# Add the rest of the parameters and generate the prizes and actors
 		self.hidden_layers = number_of_hidden_layers
 
 		self.hidden_size = size_of_hidden_layers
@@ -32,7 +42,7 @@ class geneticAlgorithm(object):
 			#going to need to avoid duplicate prizes in the same location...
 
 	def makeChildNetworks(self):
-		#sort the actors by their scores
+		# sort the actors by their scores
 		self.actors.sort(key=lambda x: x.score, reverse = 1)
 
 		temp = self.actors[0:num_best]
@@ -44,15 +54,14 @@ class geneticAlgorithm(object):
 
 				temp.append(temp[i])
 
-		weights = []
-
+		# Start gathering data for the end of the epoch
 		maxScore = self.actors[0].score
 
 		minScore = self.actors[-1].score
 
 		totalScorers = 0
 
-		totalScore = 0.0
+		totalScore = 0
 
 		for actor in self.actors:
 
@@ -62,6 +71,7 @@ class geneticAlgorithm(object):
 
 				totalScore += actor.score
 
+		# add the last of the new actors
 		while(len(temp) < len(self.actors)):
 
 			# make a new temporary actor for when new ones are created
@@ -83,19 +93,21 @@ class geneticAlgorithm(object):
 
 			j += 1
 
+		# sanity check...
 		if len(temp) != self.number_of_actors:
 
 			print("ERROR: We don't have as many actors as we started with!!!\n")
 
+		# run mutation on all the new actors
 		for actor in temp:
 
 			actor.mutate()
 
 		self.actors = temp[:]
 
-		return (maxScore, minScore, totalScore, totalScorers, totalScore/len(self.actors))
+		return (maxScore, minScore, totalScore, totalScorers, float(totalScore)/len(self.actors))
 
-	# simulate an epoch of 1000 ticks (iterations)
+	# simulate an epoch of max_ticks iterations/timesteps
 	def runEpoch(self):
 		self.epoch += 1
 
@@ -111,9 +123,7 @@ class geneticAlgorithm(object):
 				# if we get a valid index number, then the actor found the prize
 				if k >= 0:	
 					# Replace the prize by setting it as a new one (it'll get new x and y coords)				
-					self.prizes.pop(k)
-
-					self.prizes.append(prize())
+					self.prizes[k] = prize()
 
 					#increment the actor's score:
 					actor.score += 1
@@ -136,7 +146,9 @@ class geneticAlgorithm(object):
 
 		print("Average Score: " + str(results[4]) + '\n')
 
+		self.f.write(str(self.epoch) + "\t\t" + str(results[0]) + "\t\t" + str(results[1]) + "\t\t" + str(results[3]) + "\t\t" + str(results[2]) + "\t\t" + str(results[4]) + "\n")
 
+# recombine two old network weights into two net network weights
 def recombineWeights(weights1, weights2):
 	new_weights1 = []
 
@@ -169,7 +181,3 @@ def recombineWeights(weights1, weights2):
 			new_weights1.append(weights2[i])
 
 		return (new_weights1, new_weights2)
-
-
-
-

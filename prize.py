@@ -2,7 +2,7 @@ import random
 random.seed()
 from params import *
 
-# Just a small class to describe the class objects
+# Just a small class to describe the prize objects
 
 class prize(object):
 	def __init__(self):

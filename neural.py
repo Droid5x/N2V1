@@ -4,11 +4,12 @@ from params import *
 from copy import deepcopy
 random.seed()
 
-
+# Neuron class with a list of randomy generated weights from -1 to 1
 class neuron(object):
 	def __init__(self, number_of_inputs):
 		self.inputWeights = []
 
+		# Note the +1 on the loop bound for the threshold value, which is stored with the weights
 		for i in range(0, number_of_inputs+1):
 
 			self.inputWeights.append(random.uniform(-1,1))
@@ -16,7 +17,8 @@ class neuron(object):
 		self.totalActivation = 0.0
 
 		self.output = 0.0
-		
+	
+	# Given inputs, perform the weighted sum and use the sigmoid function to generate the result
 	def calcOutput(self, input_data):
 		if (len(input_data) >= len(self.inputWeights)):
 
@@ -32,10 +34,7 @@ class neuron(object):
 
 		return self.output
 
-	'''def getOutput(self):
-		return self.output'''
-
-
+# Neural layer class: a list of neurons
 class neuralLayer(object):
 	def __init__(self, number_of_neurons, num_inputs_per_neuron):
 		self.neurons = []
@@ -44,15 +43,17 @@ class neuralLayer(object):
 
 			self.neurons.append(neuron(num_inputs_per_neuron))
 
-
+# Neural net class: a list of neural layers
 class neuralNet(object):
 	def __init__(self, number_of_hidden_layers, size_of_hidden_layers, num_inputs, num_outputs):
 		self.layers = []
 
+		# This is the first (input) layer
 		layerTemp = neuralLayer(num_inputs, num_inputs)
 
 		self.layers.append(layerTemp)
 
+		# Now for the hidden layers:
 		for i in range(0,number_of_hidden_layers):
 
 			if i == 0:
@@ -65,6 +66,7 @@ class neuralNet(object):
 
 			self.layers.append(layerTemp)
 
+		# And finally the output layer
 		layerTemp = neuralLayer(num_outputs, size_of_hidden_layers)
 
 		self.layers.append(layerTemp)
@@ -74,7 +76,7 @@ class neuralNet(object):
 
 		self.updateWeightsList()
 	
-	#refresh the object's weights list
+	#refresh the network's weights list
 	def updateWeightsList(self):
 		self.weights = []
 
@@ -86,7 +88,7 @@ class neuralNet(object):
 
 					self.weights.append(weight)
 
-	# replace the object's weights with new_weights
+	# replace the network's weights with new_weights
 	def replaceWeights(self, new_weights):
 		counter = 0
 
@@ -102,6 +104,7 @@ class neuralNet(object):
 
 		self.updateWeightsList()
 
+	# Run the network with the given inputs
 	def runNetwork(self, inputs):
 		totalActivation = 0
 
@@ -127,6 +130,8 @@ class neuralNet(object):
 
 		return inputs
 
+# implementation of the sigmoid function
+# Here, the alpha term is kept at 1.0
 def sigmoid(totalActivation, threshold):
 
 	return 1/(1+math.exp(-(totalActivation-threshold/1.0)))
